@@ -12,6 +12,14 @@ exports.sendCreateNotification = functions.firestore.document('remoteDebts/{debt
         return admin.messaging().sendToDevice(tokens, payload);
     });
 
+exports.sendUpdateNotification = functions.firestore.document('remoteDebts/{debtId}')
+    .onUpdate(async (snapshot) => {
+        const data = snapshot.data();
+        let tokens = await getTokens(data.lastChangePersonUid === data.creditorUid ? data.debtorUid : data.creditorUid);
+        let payload = await getUpdateNotificationPayload(data, documentId);
+        return admin.messaging().sendToDevice(tokens, payload);
+    });
+
 async function getTokens(uid) {
     let tokens = [];
     let allTokens = await admin.firestore()
@@ -34,6 +42,14 @@ async function getCreateNotificationPayload(data, documentId) {
 	    type: 'create',
             personName: personName,
             value: value
+        }
+    };
+}
+
+async function getUpdateNotificationPayload(data) {
+    return {
+        data: {
+	    type: 'update'
         }
     };
 }
