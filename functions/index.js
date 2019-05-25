@@ -29,6 +29,7 @@ async function getCreateNotificationPayload(data) {
     let value = data.initPersonUid === data.creditorUid ? ('' + (data.value * -1)) : ('' + data.value);
     return {
         data: {
+	    type: 'create',
             personName: personName,
             value: value
         }
