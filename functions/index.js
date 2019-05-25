@@ -13,8 +13,8 @@ exports.sendCreateNotification = functions.firestore.document('remoteDebts/{debt
     });
 
 exports.sendUpdateNotification = functions.firestore.document('remoteDebts/{debtId}')
-    .onUpdate(async (snapshot) => {
-        const data = snapshot.data();
+    .onUpdate(async (change, context) => {
+        const data = change.after.data();
         let tokens = await getTokens(data.lastChangePersonUid === data.creditorUid ? data.debtorUid : data.creditorUid);
         let payload = await getUpdateNotificationPayload(data, documentId);
         return admin.messaging().sendToDevice(tokens, payload);
