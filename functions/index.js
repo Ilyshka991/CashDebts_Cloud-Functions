@@ -16,7 +16,7 @@ exports.sendUpdateNotification = functions.firestore.document('remoteDebts/{debt
     .onUpdate(async (change, context) => {
         const data = change.after.data();
         let tokens = await getTokens(data.lastChangePersonUid === data.creditorUid ? data.debtorUid : data.creditorUid);
-        let payload = await getUpdateNotificationPayload(data, documentId);
+        let payload = await getUpdateNotificationPayload(data);
         return admin.messaging().sendToDevice(tokens, payload);
     });
 
